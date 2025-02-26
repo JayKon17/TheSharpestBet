@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Player Game Stats</h1>
+        </header>
+
+        <div class="search-container">
+            <input type="text" id="playerName" placeholder="Enter player name" />
+            <button onclick="fetchPlayerData()">Get Stats</button>
+        </div>
+
+        <div id="loadingMessage" class="loading-message" style="display: none;">Please wait, fetching stats...</div>
+
+        <div id="playerData">
+            <!-- Averages and stats will be inserted here -->
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
