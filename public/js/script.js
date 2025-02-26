@@ -57,7 +57,7 @@ function fetchPlayerData() {
             const numGames = parseInt(document.getElementById('gameSlider').value, 10);
 
             // Create a subset of the last N games based on the slider
-            const statsSubset = data.processedStats.slice(0, numGames);
+            const statsSubset = data.processedStats.slice(-numGames);
 
             // Calculate averages for the selected subset
             let avgPoints = calculateAverage(statsSubset.map(game => parseFloat(game.points) || 0));
