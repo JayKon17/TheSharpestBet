@@ -15,10 +15,10 @@ body {
 
 /* Container Styling */
 .container {
-    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
+
 
 /* Header Styling */
 header {
@@ -115,19 +115,20 @@ tr:hover {
     }
 
     input[type="text"] {
-        width: 80%;
+        width: 100%;
     }
 }
 
 /* Style for the averages table */
 #averagesTable {
-    width: 60%; /* Adjusted for a cleaner layout */
+    width: 400px !important; /* Adjusted for a cleaner layout */
     margin: 30px auto;
     background-color: #f8f8f8;
     border-collapse: collapse;
 }
 
 #averagesTable th, #averagesTable td {
+    max-width: 200px;
     padding: 12px 15px;
     text-align: center;
     border: 1px solid #ddd;
@@ -178,4 +179,14 @@ tr:hover {
 
 #statsTable tbody tr:hover {
     background-color: #f1f1f1;
+}
+
+#gameSlider {
+    width: 20%;
+    margin: 10px 0;
+    margin-left: 24%;
+}
+
+#sliderValue {
+    font-weight: bold;
 }

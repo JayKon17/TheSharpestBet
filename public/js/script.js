@@ -1,3 +1,9 @@
+// Update the slider value display in real-time as the user moves the slider
+document.getElementById('gameSlider').addEventListener('input', function() {
+    document.getElementById('sliderValue').textContent = this.value;  // Update display text
+});
+
+// Function to fetch player data
 function fetchPlayerData() {
     const playerName = document.getElementById('playerName').value.trim();
 
@@ -47,16 +53,22 @@ function fetchPlayerData() {
                 });
             }
 
-            // Calculate averages
-            let avgPoints = calculateAverage(points);
-            let avgRebounds = calculateAverage(rebounds);
-            let avgAssists = calculateAverage(assists);
-            let avgSteals = calculateAverage(steals);
-            let avgBlocks = calculateAverage(blocks);
+            // Get the number of games from the slider
+            const numGames = parseInt(document.getElementById('gameSlider').value, 10);
+
+            // Create a subset of the last N games based on the slider
+            const statsSubset = data.processedStats.slice(0, numGames);
+
+            // Calculate averages for the selected subset
+            let avgPoints = calculateAverage(statsSubset.map(game => parseFloat(game.points) || 0));
+            let avgRebounds = calculateAverage(statsSubset.map(game => parseFloat(game.rebounds) || 0));
+            let avgAssists = calculateAverage(statsSubset.map(game => parseFloat(game.assists) || 0));
+            let avgSteals = calculateAverage(statsSubset.map(game => parseFloat(game.steals) || 0));
+            let avgBlocks = calculateAverage(statsSubset.map(game => parseFloat(game.blocks) || 0));
 
             // Prepare HTML content to display averages in a table
-            let htmlContent = `<h2>Player Averages</h2>
-            <table class="averagesTable" border="1">
+            let htmlContent = `<h2>Player Averages (Last ${numGames} Games)</h2>
+                <table id="averagesTable" class="averagesTable" border="1">
                 <thead>
                     <tr>
                         <th>Stat</th><th>Average</th>
@@ -80,8 +92,8 @@ function fetchPlayerData() {
             // Add the game stats table below
             let statsContent = "<h2>Player Game Stats</h2><table border='1' class='gameStatsTable'><thead><tr><th>Game ID</th><th>Date</th><th>Team</th><th>@</th><th>Opponent</th><th>Score</th><th>Minutes Played</th><th>FGM</th><th>FGA</th><th>3PM</th><th>3PA</th><th>Rebounds</th><th>Assists</th><th>Steals</th><th>Blocks</th><th>Points</th></tr></thead><tbody>";
 
-            // Loop through processed stats and create table rows
-            data.processedStats.forEach(game => {
+            // Loop through processed stats and create table rows for the selected subset
+            statsSubset.forEach(game => {
                 statsContent += `<tr>
                     <td>${game.game_id || 'N/A'}</td>
                     <td>${game.date || 'N/A'}</td>
