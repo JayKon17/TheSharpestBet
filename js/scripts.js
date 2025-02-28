@@ -78,7 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <div id="suggestions-container" class="suggestions-container"></div>
         `;
         document.getElementById("live-scores-container").style.display = "block";
-        document.getElementById("shot-analysis-container").style.display = "block";
         fetchLiveNHLScore();  // Fetch live NHL scores
     }
 
@@ -143,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const url = `https://cors-anywhere.herokuapp.com/https://api-web.nhle.com/v1/player/${playerId}/game-log/20242025/2`;
     
         document.getElementById("game-log-container").style.display = "block"
+        document.getElementById("shot-analysis-container").style.display = "block"
 
         fetch(url)
             .then(response => response.json())
@@ -252,10 +252,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function displayShotAnalysis() {
         const shotAnalysisContainer = document.getElementById("shot-analysis-container");
-        if (!shotAnalysisContainer) {
-            console.error("Shot Analysis container not found!");
-            return;  // Exit if the container doesn't exist
-        }
     
         shotAnalysisContainer.innerHTML = '';  // Clear previous content
     
