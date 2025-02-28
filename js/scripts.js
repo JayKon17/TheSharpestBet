@@ -174,17 +174,18 @@ document.addEventListener("DOMContentLoaded", () => {
         table.classList.add('game-log-table'); // Add a class for styling
 
         // Define headers
-        const headers = ['Date', '@', 'Opponent', 'Goals', 'Assists', 'Points', 'Shots', 'PIM', 'TOI'];
+        const headers = ['Date', 'Team', '@', 'Opponent', 'Goals', 'Assists', 'Points', 'Shots', 'PIM', 'TOI'];
 
         // Create table header (using map and template literals)
         const headerRow = `<tr>${headers.map(headerText => `<th>${headerText}</th>`).join('')}</tr>`;
 
 // Create table rows
 const rows = gameLog.map(game => {
-    const atSymbol = game.homeRoadFlag === "R" ? "@" : "";
+    const atSymbol = game.homeRoadFlag === "R" ? "@" : "vs";
     return `
         <tr>
             <td>${game.gameDate}</td>
+            <td>${game.commonName.default}</td>
             <td>${atSymbol}</td>
             <td>${game.opponentCommonName.default}</td>
             <td>${game.goals}</td>
