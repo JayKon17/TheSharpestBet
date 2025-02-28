@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     const teamAbbreviations = {"Ottawa Senators":"OTT","Winnipeg Jets":"WPG","Colorado Avalanche":"COL","New Jersey Devils":"NJ","Los Angeles Kings":"LA","Vancouver Canucks":"VAN","Toronto Maple Leafs":"TOR","Montréal Canadiens":"MTL","Calgary Flames":"CGY","Edmonton Oilers":"EDM","Boston Bruins":"BOS","Buffalo Sabres":"BUF","Detroit Red Wings":"DET","Florida Panthers":"FLA","Chicago Blackhawks":"CHI","Minnesota Wild":"MIN","Carolina Hurricanes":"CAR","Dallas Stars":"DAL","Anaheim Ducks":"ANA","Columbus Blue Jackets":"CBJ","Philadelphia Flyers":"PHI","Nashville Predators":"NSH","St Louis Blues":"STL","Pittsburgh Penguins":"PIT","Arizona Coyotes":"ARI","Tampa Bay Lightning":"TB","San Jose Sharks":"SJ","Washington Capitals":"WSH","New York Rangers":"NYR","New York Islanders":"NYI","Seattle Kraken":"SEA","Vegas Golden Knights":"VGK","Utah Hockey Club":"UTAH","Arizona Cardinals":"ARI","Atlanta Falcons":"ATL","Baltimore Ravens":"BAL","Buffalo Bills":"BUF","Carolina Panthers":"CAR","Chicago Bears":"CHI","Cincinnati Bengals":"CIN","Cleveland Browns":"CLE","Dallas Cowboys":"DAL","Denver Broncos":"DEN","Detroit Lions":"DET","Green Bay Packers":"GB","Houston Texans":"HOU","Indianapolis Colts":"IND","Jacksonville Jaguars":"JAX","Kansas City Chiefs":"KC","Las Vegas Raiders":"LV","Los Angeles Chargers":"LAC","Los Angeles Rams":"LAR","Miami Dolphins":"MIA","Minnesota Vikings":"MIN","New England Patriots":"NE","New Orleans Saints":"NO","New York Giants":"NYG","New York Jets":"NYJ","Philadelphia Eagles":"PHI","Pittsburgh Steelers":"PIT","San Francisco 49ers":"SF","Seattle Seahawks":"SEA","Tampa Bay Buccaneers":"TB","Tennessee Titans":"TEN","Washington Football Team":"WAS","Atlanta Hawks":"ATL","Boston Celtics":"BOS","Brooklyn Nets":"BKN","Charlotte Hornets":"CHA","Chicago Bulls":"CHI","Cleveland Cavaliers":"CLE","Dallas Mavericks":"DAL","Denver Nuggets":"DEN","Detroit Pistons":"DET","Golden State Warriors":"GSW","Houston Rockets":"HOU","Indiana Pacers":"IND","Los Angeles Clippers":"LAC","Los Angeles Lakers":"LAL","Memphis Grizzlies":"MEM","Miami Heat":"MIA","Milwaukee Bucks":"MIL","Minnesota Timberwolves":"MIN","New Orleans Pelicans":"NO","New York Knicks":"NYK","Oklahoma City Thunder":"OKC","Orlando Magic":"ORL","Philadelphia 76ers":"PHI","Phoenix Suns":"PHX","Portland Trail Blazers":"POR","Sacramento Kings":"SAC","San Antonio Spurs":"SAS","Toronto Raptors":"TOR","Utah Jazz":"UTAH","Washington Wizards":"WAS","Arizona Diamondbacks":"ARI","Atlanta Braves":"ATL","Baltimore Orioles":"BAL","Boston Red Sox":"BOS","Chicago Cubs":"CHC","Chicago White Sox":"CWS","Cincinnati Reds":"CIN","Cleveland Indians":"CLE","Colorado Rockies":"COL","Detroit Tigers":"DET","Houston Astros":"HOU","Kansas City Royals":"KC","Los Angeles Angels":"LAA","Los Angeles Dodgers":"LAD","Miami Marlins":"MIA","Milwaukee Brewers":"MIL","Minnesota Twins":"MIN","New York Mets":"NYM","New York Yankees":"NYY","Oakland Athletics":"OAK","Philadelphia Phillies":"PHI","Pittsburgh Pirates":"PIT","San Diego Padres":"SD","San Francisco Giants":"SF","Seattle Mariners":"SEA","St. Louis Cardinals":"STL","Tampa Bay Rays":"TB","Texas Rangers":"TEX","Toronto Blue Jays":"TOR","Washington Nationals":"WSH"};
-    const API_key = "5be9118d712dcce89e543dbfa3a1de27" // 7 is last digit
+    const API_key = "5be9118d712dcce89e543dbfa3a1de2" // 7 is last digit
 
     // Data structure to manage sport-related content
     const sportsData = {
@@ -363,8 +363,8 @@ function displayShotAnalysis() {
             const overPercent = overCount / gameLogData.length;
             const underPercent = underCount / gameLogData.length;
     
-            percentages.over[index] = (overPercent * 100).toFixed(2) + "%";
-            percentages.under[index] = (underPercent * 100).toFixed(2) + "%";
+            percentages.over[index] = (overPercent * 100).toFixed(1) + "%";
+            percentages.under[index] = (underPercent * 100).toFixed(1) + "%";
     
             // Breakeven Odds Conversion
             breakevens.over[index] = convertToAmericanOdds(overPercent);
@@ -466,7 +466,7 @@ function displayShotAnalysis() {
     function fetchLiveNHLScore() {
         const apiKey = API_key;  // Replace with your actual API key
         const apiUrl = `https://api.the-odds-api.com/v4/sports/icehockey_nhl/scores/?daysFrom=1&apiKey=${apiKey}`;
-
+    
         fetch(apiUrl)
             .then(response => response.json())
             .then(data => {
@@ -479,101 +479,124 @@ function displayShotAnalysis() {
             })
             .catch(error => {
                 console.error('Error fetching live scores:', error);
-                displayLiveNHLScores([]);
+                displayLiveNHLScores([]);  // Ensure a blank scoreboard is displayed if the API fails
             });
     }
-
+    
     function displayLiveNHLScores(data) {
         const scoresContainer = document.getElementById("live-scores");
         scoresContainer.innerHTML = ''; // Clear existing content
-    
-        data.forEach(game => {
-            const gameElement = document.createElement("div");
-            gameElement.classList.add("score-item");
-    
-            if (game.scores && game.scores.length >= 2) {
-                // **LIVE OR COMPLETED GAME**
-                const homeTeamAbbr = teamAbbreviations[game.scores[0].name] || 'default';
-                const awayTeamAbbr = teamAbbreviations[game.scores[1].name] || 'default';
-    
-                const homeTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${homeTeamAbbr}.png&h=27&w=27`;
-                const awayTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${awayTeamAbbr}.png&h=27&w=27`;
-    
-                const homeTeamScore = game.scores[0].score ?? "N/A";
-                const awayTeamScore = game.scores[1].score ?? "N/A";
-    
-                gameElement.innerHTML = `
+        
+        // Create a blank scoreboard if no games or API error
+        if (data.length === 0) {
+            const placeholderMessage = document.createElement("div");
+            placeholderMessage.classList.add("scoreboard-placeholder");
+            placeholderMessage.innerHTML = `
+                <div class="score-item">
                     <div class="score-item-header">
-                        <span class="game-status-present">${game.completed ? 'Final' : 'In Progress'}</span>
-                        <hr style="border: 0; border-top: 1px solid #ccc; margin: 0px 0;">
+                        <span class="game-status-future">No live NHL games available at the moment.</span>
                     </div>
                     <div class="score-item-body">
                         <div class="team">
-                            <img src="${homeTeamLogo}" alt="${homeTeamAbbr}" class="team-logo">
-                            <span class="team-name">${homeTeamAbbr}</span>
-                            <span class="score">${homeTeamScore}</span>
+                            <span class="team-name"></span>
                         </div>
                         <div class="team">
-                            <img src="${awayTeamLogo}" alt="${awayTeamAbbr}" class="team-logo">
-                            <span class="team-name">${awayTeamAbbr}</span>
-                            <span class="score">${awayTeamScore}</span>
+                            <span class="team-name"></span>
                         </div>
                     </div>
-                `;
-            } else if (!game.scores) {
-                // **FUTURE GAME**
-                const gameDate = new Date(game.commence_time); // Parse the ISO string
-                // Get today's date
-                const today = new Date();
-
-                // Check if the game date is today
-                const isToday = gameDate.toLocaleDateString('en-US', {
-                    month: '2-digit',
-                    day: '2-digit',
-                }) === today.toLocaleDateString('en-US', {
-                    month: '2-digit',
-                    day: '2-digit',
-                });
-
-                // Format the game date if it's not today
-                const formattedDate = isToday ? '' : gameDate.toLocaleDateString('en-US', {
-                    month: '2-digit',
-                    day: '2-digit',
-                }); // e.g., "02/27" or ""
-
-                const formattedTime = gameDate.toLocaleTimeString('en-US', {
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    hour12: true,
-                }); // e.g., "7:00 PM"
-            
-                const homeTeamAbbr = teamAbbreviations[game.home_team] || 'default';
-                const awayTeamAbbr = teamAbbreviations[game.away_team] || 'default';
+                </div>
+            `;
+            scoresContainer.appendChild(placeholderMessage); // Add the placeholder content
+        } else {
+            data.forEach(game => {
+                const gameElement = document.createElement("div");
+                gameElement.classList.add("score-item");
     
-                const homeTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${homeTeamAbbr}.png&h=27&w=27`;
-                const awayTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${awayTeamAbbr}.png&h=27&w=27`;
+                if (game.scores && game.scores.length >= 2) {
+                    // **LIVE OR COMPLETED GAME**
+                    const homeTeamAbbr = teamAbbreviations[game.scores[0].name] || 'default';
+                    const awayTeamAbbr = teamAbbreviations[game.scores[1].name] || 'default';
     
-                gameElement.innerHTML = `
-                    <div class="score-item-header">
-                        <span class="game-status-future">${formattedDate} ${formattedTime}</span>
-                        <hr style="border: 0; border-top: 1px solid #ccc; margin: 0px 0;">
-                    </div>
-                    <div class="score-item-body">
-                        <div class="team">
-                            <img src="${homeTeamLogo}" alt="${homeTeamAbbr}" class="team-logo">
-                            <span class="team-name">${homeTeamAbbr}</span>
+                    const homeTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${homeTeamAbbr}.png&h=27&w=27`;
+                    const awayTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${awayTeamAbbr}.png&h=27&w=27`;
+    
+                    const homeTeamScore = game.scores[0].score ?? "N/A";
+                    const awayTeamScore = game.scores[1].score ?? "N/A";
+    
+                    gameElement.innerHTML = `
+                        <div class="score-item-header">
+                            <span class="game-status-present">${game.completed ? 'Final' : 'In Progress'}</span>
+                            <hr style="border: 0; border-top: 1px solid #ccc; margin: 0px 0;">
                         </div>
-                        <div class="team">
-                            <img src="${awayTeamLogo}" alt="${awayTeamAbbr}" class="team-logo">
-                            <span class="team-name">${awayTeamAbbr}</span>
+                        <div class="score-item-body">
+                            <div class="team">
+                                <img src="${homeTeamLogo}" alt="${homeTeamAbbr}" class="team-logo">
+                                <span class="team-name">${homeTeamAbbr}</span>
+                                <span class="score">${homeTeamScore}</span>
+                            </div>
+                            <div class="team">
+                                <img src="${awayTeamLogo}" alt="${awayTeamAbbr}" class="team-logo">
+                                <span class="team-name">${awayTeamAbbr}</span>
+                                <span class="score">${awayTeamScore}</span>
+                            </div>
                         </div>
-                    </div>
-                `;
-            }
+                    `;
+                } else if (!game.scores) {
+                    // **FUTURE GAME**
+                    const gameDate = new Date(game.commence_time); // Parse the ISO string
+                    // Get today's date
+                    const today = new Date();
     
-            scoresContainer.appendChild(gameElement);
-        });
+                    // Check if the game date is today
+                    const isToday = gameDate.toLocaleDateString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                    }) === today.toLocaleDateString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                    });
+    
+                    // Format the game date if it's not today
+                    const formattedDate = isToday ? '' : gameDate.toLocaleDateString('en-US', {
+                        month: '2-digit',
+                        day: '2-digit',
+                    }); // e.g., "02/27" or ""
+    
+                    const formattedTime = gameDate.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true,
+                    }); // e.g., "7:00 PM"
+                
+                    const homeTeamAbbr = teamAbbreviations[game.home_team] || 'default';
+                    const awayTeamAbbr = teamAbbreviations[game.away_team] || 'default';
+    
+                    const homeTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${homeTeamAbbr}.png&h=27&w=27`;
+                    const awayTeamLogo = `https://a1.espncdn.com/combiner/i?img=/i/teamlogos/NHL/500/scoreboard/${awayTeamAbbr}.png&h=27&w=27`;
+    
+                    gameElement.innerHTML = `
+                        <div class="score-item-header">
+                            <span class="game-status-future">${formattedDate} ${formattedTime}</span>
+                            <hr style="border: 0; border-top: 1px solid #ccc; margin: 0px 0;">
+                        </div>
+                        <div class="score-item-body">
+                            <div class="team">
+                                <img src="${homeTeamLogo}" alt="${homeTeamAbbr}" class="team-logo">
+                                <span class="team-name">${homeTeamAbbr}</span>
+                            </div>
+                            <div class="team">
+                                <img src="${awayTeamLogo}" alt="${awayTeamAbbr}" class="team-logo">
+                                <span class="team-name">${awayTeamAbbr}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+    
+                scoresContainer.appendChild(gameElement);
+            });
+        }
     }
+    
 
 
 
