@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const teamAbbreviations = {"Ottawa Senators":"OTT","Winnipeg Jets":"WPG","Colorado Avalanche":"COL","New Jersey Devils":"NJ","Los Angeles Kings":"LA","Vancouver Canucks":"VAN","Toronto Maple Leafs":"TOR","Montréal Canadiens":"MTL","Calgary Flames":"CGY","Edmonton Oilers":"EDM","Boston Bruins":"BOS","Buffalo Sabres":"BUF","Detroit Red Wings":"DET","Florida Panthers":"FLA","Chicago Blackhawks":"CHI","Minnesota Wild":"MIN","Carolina Hurricanes":"CAR","Dallas Stars":"DAL","Anaheim Ducks":"ANA","Columbus Blue Jackets":"CBJ","Philadelphia Flyers":"PHI","Nashville Predators":"NSH","St Louis Blues":"STL","Pittsburgh Penguins":"PIT","Arizona Coyotes":"ARI","Tampa Bay Lightning":"TB","San Jose Sharks":"SJ","Washington Capitals":"WSH","New York Rangers":"NYR","New York Islanders":"NYI","Seattle Kraken":"SEA","Vegas Golden Knights":"VGK","Utah Hockey Club":"UTAH","Arizona Cardinals":"ARI","Atlanta Falcons":"ATL","Baltimore Ravens":"BAL","Buffalo Bills":"BUF","Carolina Panthers":"CAR","Chicago Bears":"CHI","Cincinnati Bengals":"CIN","Cleveland Browns":"CLE","Dallas Cowboys":"DAL","Denver Broncos":"DEN","Detroit Lions":"DET","Green Bay Packers":"GB","Houston Texans":"HOU","Indianapolis Colts":"IND","Jacksonville Jaguars":"JAX","Kansas City Chiefs":"KC","Las Vegas Raiders":"LV","Los Angeles Chargers":"LAC","Los Angeles Rams":"LAR","Miami Dolphins":"MIA","Minnesota Vikings":"MIN","New England Patriots":"NE","New Orleans Saints":"NO","New York Giants":"NYG","New York Jets":"NYJ","Philadelphia Eagles":"PHI","Pittsburgh Steelers":"PIT","San Francisco 49ers":"SF","Seattle Seahawks":"SEA","Tampa Bay Buccaneers":"TB","Tennessee Titans":"TEN","Washington Football Team":"WAS","Atlanta Hawks":"ATL","Boston Celtics":"BOS","Brooklyn Nets":"BKN","Charlotte Hornets":"CHA","Chicago Bulls":"CHI","Cleveland Cavaliers":"CLE","Dallas Mavericks":"DAL","Denver Nuggets":"DEN","Detroit Pistons":"DET","Golden State Warriors":"GSW","Houston Rockets":"HOU","Indiana Pacers":"IND","Los Angeles Clippers":"LAC","Los Angeles Lakers":"LAL","Memphis Grizzlies":"MEM","Miami Heat":"MIA","Milwaukee Bucks":"MIL","Minnesota Timberwolves":"MIN","New Orleans Pelicans":"NO","New York Knicks":"NYK","Oklahoma City Thunder":"OKC","Orlando Magic":"ORL","Philadelphia 76ers":"PHI","Phoenix Suns":"PHX","Portland Trail Blazers":"POR","Sacramento Kings":"SAC","San Antonio Spurs":"SAS","Toronto Raptors":"TOR","Utah Jazz":"UTAH","Washington Wizards":"WAS","Arizona Diamondbacks":"ARI","Atlanta Braves":"ATL","Baltimore Orioles":"BAL","Boston Red Sox":"BOS","Chicago Cubs":"CHC","Chicago White Sox":"CWS","Cincinnati Reds":"CIN","Cleveland Indians":"CLE","Colorado Rockies":"COL","Detroit Tigers":"DET","Houston Astros":"HOU","Kansas City Royals":"KC","Los Angeles Angels":"LAA","Los Angeles Dodgers":"LAD","Miami Marlins":"MIA","Milwaukee Brewers":"MIL","Minnesota Twins":"MIN","New York Mets":"NYM","New York Yankees":"NYY","Oakland Athletics":"OAK","Philadelphia Phillies":"PHI","Pittsburgh Pirates":"PIT","San Diego Padres":"SD","San Francisco Giants":"SF","Seattle Mariners":"SEA","St. Louis Cardinals":"STL","Tampa Bay Rays":"TB","Texas Rangers":"TEX","Toronto Blue Jays":"TOR","Washington Nationals":"WSH"};
-
     const API_key = "5be9118d712dcce89e543dbfa3a1de2"
 
     // Data structure to manage sport-related content
@@ -48,10 +47,32 @@ document.addEventListener("DOMContentLoaded", () => {
         sportsData[sport].contentFunction();
     }
 
+    // NHL Stuff 
+
+    let playerIDConverter = {};
+
+    /* NHL Player ID Map */
+    let playerData = [];  // Initialize as an empty array
+
+    fetch('data/NHL_playerIDconverter.json')
+        .then(response => response.json())
+        .then(data => {
+            playerData = Object.keys(data).map(name => ({
+                name: name, 
+                id: data[name]  // Preserve the ID if needed
+            }));
+            console.log("Player data loaded", playerData);  // Debugging log
+        })
+        .catch(error => console.error('Error loading player data:', error));
+    
     // Show content for the NHL page
     function showNHLPage() {
         const contentArea = document.getElementById("content-area");
         contentArea.innerHTML = `
+            <div class="search-bar-container">
+            <input type="text" id="search-bar" placeholder="Search for players..." onkeyup="showSuggestions(this.value)">
+            <div id="suggestions-container" class="suggestions-container"></div>
+            </div>
             <div class="box-container">
                 <div class="sport-box">Goal Leaders</div>
                 <div class="sport-box">Fantasy Rankings</div>
@@ -62,7 +83,183 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("live-scores-container").style.display = "block";
 
         fetchLiveNHLScore();  // Fetch live NHL scores
+
     }
+
+    // Show suggestions based on the search input
+    window.showSuggestions = function (query) {
+        const suggestionsContainer = document.getElementById("suggestions-container");
+        suggestionsContainer.innerHTML = '';  // Clear previous suggestions
+    
+        if (query.length > 2) {
+            const filteredPlayers = playerData.filter(player =>
+                player.name.toLowerCase().includes(query.toLowerCase())
+            );
+    
+            filteredPlayers.forEach(player => {
+                const suggestionItem = document.createElement("div");
+                suggestionItem.classList.add("suggestion-item");
+                suggestionItem.textContent = player.name;
+                suggestionItem.onclick = function () {
+                    selectPlayer(player.name);
+                };
+                suggestionsContainer.appendChild(suggestionItem);
+            });
+        }
+    };
+    
+    window.selectPlayer = function (playerName) {
+        document.getElementById("search-bar").value = playerName;
+        document.getElementById("suggestions-container").innerHTML = '';  // Clear suggestions
+        console.log(`Player selected: ${playerName}`);  // Replace with actual functionality
+    };
+
+    function selectPlayer(playerName) {
+        document.getElementById("search-bar").value = playerName;
+        document.getElementById("suggestions-container").innerHTML = '';  // Clear suggestions
+    
+        // Normalize the player name (case insensitive)
+        const normalizedPlayerName = playerName.trim().toLowerCase();
+    
+        // Check if playerData is an array
+        if (!Array.isArray(playerData)) {
+            console.error("Player data is not an array. Please check its structure.");
+            return;
+        }
+    
+        // Loop through playerData array to find the correct player ID
+        let playerId = null;
+        for (let i = 0; i < playerData.length; i++) {
+            if (playerData[i].name.toLowerCase() === normalizedPlayerName) {
+                playerId = playerData[i].id;
+                break;  // Exit the loop once the correct player is found
+            }
+        }
+    
+        // If player ID was found, proceed; otherwise, display an error
+        if (!playerId) {
+            console.error(`Player ID not found for: ${playerName}`);
+            document.getElementById("game-log-container").innerHTML = `Player ID not found for: ${playerName}`;
+            return;  // Stop the function if ID is not found
+        }
+    
+        // Call API with the found player ID
+        const url = `https://cors-anywhere.herokuapp.com/https://api-web.nhle.com/v1/player/${playerId}/game-log/20242025/2`;
+    
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.gameLog && data.gameLog.length > 0) {
+                    displayGameLog(data.gameLog);
+                } else {
+                    document.getElementById("game-log-container").innerHTML = "No Game Log Data available.";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching player stats:', error);
+                document.getElementById("game-log-container").innerHTML = "Error fetching player stats.";
+            });
+    }
+    
+    
+    
+    
+    
+    
+
+
+
+
+    
+    
+    // Function to display the game log data in an HTML table
+    function displayGameLog(gameLog) {
+        const tableContainer = document.getElementById("game-log-container");
+        tableContainer.innerHTML = '';  // Clear previous content
+    
+        // Create table
+        const table = document.createElement('table');
+        table.classList.add('game-log-table');  // Add a class for styling
+    
+        // Create table header
+        const header = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        const headers = ['Date', 'Opponent', 'Goals', 'Assists', 'Points', 'Shots', 'PIM', 'TOI'];
+    
+        headers.forEach(headerText => {
+            const th = document.createElement('th');
+            th.textContent = headerText;
+            headerRow.appendChild(th);
+        });
+        header.appendChild(headerRow);
+        table.appendChild(header);
+    
+        // Create table body
+        const tbody = document.createElement('tbody');
+        gameLog.forEach(game => {
+            const row = document.createElement('tr');
+            
+            // Game Date
+            const dateCell = document.createElement('td');
+            dateCell.textContent = game.gameDate;
+            row.appendChild(dateCell);
+    
+            // Opponent
+            const opponentCell = document.createElement('td');
+            opponentCell.textContent = game.opponentCommonName.default;
+            row.appendChild(opponentCell);
+    
+            // Goals
+            const goalsCell = document.createElement('td');
+            goalsCell.textContent = game.goals;
+            row.appendChild(goalsCell);
+    
+            // Assists
+            const assistsCell = document.createElement('td');
+            assistsCell.textContent = game.assists;
+            row.appendChild(assistsCell);
+    
+            // Points
+            const pointsCell = document.createElement('td');
+            pointsCell.textContent = game.points;
+            row.appendChild(pointsCell);
+    
+            // Shots
+            const shotsCell = document.createElement('td');
+            shotsCell.textContent = game.shots;
+            row.appendChild(shotsCell);
+    
+            // PIM
+            const pimCell = document.createElement('td');
+            pimCell.textContent = game.pim;
+            row.appendChild(pimCell);
+    
+            // TOI (Time on Ice)
+            const toiCell = document.createElement('td');
+            toiCell.textContent = game.toi;
+            row.appendChild(toiCell);
+    
+            tbody.appendChild(row);
+        });
+    
+        table.appendChild(tbody);
+        tableContainer.appendChild(table);  // Append the table to the container
+    }
+    
+
+
+
+
+
+
+
+    //NBA Stuff
+
+
+
+
+
+
 
     // Show content for the NBA page
     function showNBAPage() {

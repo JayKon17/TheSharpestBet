@@ -365,4 +365,107 @@ th {
     background-color: #555;
 }
 
+/* Search Bar Stuff */
+.search-bar-container {
+    margin-bottom: 20px;
+    margin-right: auto
+}
 
+#search-bar {
+    width: 500px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 10px;
+    box-sizing: border-box;
+}
+
+/* Container for suggestions */
+.suggestions-container {
+    position: absolute;
+    width: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-top: none;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Each suggestion item */
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease-in-out;
+}
+
+/* Hover effect */
+.suggestion-item:hover {
+    background: #f0f0f0;
+}
+
+
+/* Game Log Containers */
+
+/* General table styling */
+#game-log-container table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, sans-serif;
+}
+
+#game-log-container th, #game-log-container td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Header styling */
+#game-log-container th {
+    background-color: #0044cc; /* Blue header */
+    color: white;
+    font-weight: bold;
+}
+
+/* Row styling */
+#game-log-container tr:nth-child(even) {
+    background-color: #f2f2f2; /* Light grey for even rows */
+}
+
+#game-log-container tr:nth-child(odd) {
+    background-color: #ffffff; /* White for odd rows */
+}
+
+#game-log-container tr:hover {
+    background-color: #ddd; /* Light grey on hover */
+}
+
+/* Improve the look of small cells like game date and opponent */
+#game-log-container td {
+    font-size: 14px;
+}
+
+/* Responsive design: make the table scrollable on small screens */
+#game-log-container {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+/* Add a title for the game log section */
+#game-log-container h2 {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+/* Table caption */
+#game-log-container caption {
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: left;
+}
