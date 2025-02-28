@@ -3,33 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Stats</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>Sports Stats Website</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Player Game Stats</h1>
-        </header>
-
-        <div class="search-container">
-            <input type="text" id="playerName" placeholder="Enter player name" />
-            <button onclick="fetchPlayerData()">Get Stats</button>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>The Sharpest Bet</h2>
         </div>
-
-        <div id="loadingMessage" class="loading-message" style="display: none;">Please wait, fetching stats...</div>
-        
-        <label for="gameSlider">Select Number of Games: </label>
-        <input type="range" id="gameSlider" min="1" max="82" value="82" step="1">
-        <span id="sliderValue">82</span> Games
-
-        <div id="playerData">
-            <!-- COMMENT HERE WILL BE AVERAGES+DATA OR SOMETHING -->
-        </div>
-                    
-        <script src="public/js/script.js"></script>
+        <ul>
+            <li class="has-submenu">
+                <a href="#" data-sport="nhl">🏒 NHL</a>
+                <ul class="submenu">
+                    <li><a href="#">Standings</a></li>
+                    <li><a href="#">Player Stats</a></li>
+                    <li><a href="#">Team Stats</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <a href="#" data-sport="nba">🏀 NBA</a>
+                <ul class="submenu">
+                    <li><a href="#">Standings</a></li>
+                    <li><a href="#">Player Stats</a></li>
+                    <li><a href="#">Team Stats</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <a href="#" data-sport="mlb">⚾ MLB</a>
+                <ul class="submenu">
+                    <li><a href="#">Standings</a></li>
+                    <li><a href="#">Player Stats</a></li>
+                    <li><a href="#">Team Stats</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <a href="#" data-sport="nfl">🏈 NFL</a>
+                <ul class="submenu">
+                    <li><a href="#">Standings</a></li>
+                    <li><a href="#">Player Stats</a></li>
+                    <li><a href="#">Team Stats</a></li>
+                </ul>
+            </li>
+            <li class="has-submenu">
+                <a href="#" data-sport="locks">🔒 LOCKS</a>
+                <ul class="submenu">
+                    <li><a href="#">Best Bets</a></li>
+                    <li><a href="#">Historical Data</a></li>
+                </ul>
+            </li>
+        </ul>
     </div>
 
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Live Scores Container (only for NHL) -->
+        <div id="live-scores-container">
+            <div id="live-scores">
+                <!-- Live scores will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <div id="section-title">
+            <h1>Welcome to The Sharpest Bet</h1>
+        </div>
+
+        <!-- Content area where sport-specific content will be injected -->
+        <div id="content-area">
+            <!-- Content dynamically loaded based on sport selection -->
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/scripts.js"></script>
 </body>
 </html>
