@@ -38,11 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateContent(sport) {
         const contentArea = document.getElementById("content-area");
         const liveScoresContainer = document.getElementById("live-scores-container");
+        const gameLogContainer = document.getElementById("game-log-container");
 
         contentArea.innerHTML = "";  // Clear any previous content
         document.getElementById("section-title").innerText = sportsData[sport].title;
         
         liveScoresContainer.style.display = "none";
+        gameLogContainer.style.display = "none";
 
         sportsData[sport].contentFunction();
     }
@@ -72,18 +74,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="search-bar-container">
             <input type="text" id="search-bar" placeholder="Search for players..." onkeyup="showSuggestions(this.value)">
             <div id="suggestions-container" class="suggestions-container"></div>
-            </div>
-            <div class="box-container">
-                <div class="sport-box">Goal Leaders</div>
-                <div class="sport-box">Fantasy Rankings</div>
-                <div class="sport-box">Goalie Stats</div>
-                <div class="sport-box">Game Schedule</div>
-            </div>
         `;
         document.getElementById("live-scores-container").style.display = "block";
-
         fetchLiveNHLScore();  // Fetch live NHL scores
-
     }
 
     // Show suggestions based on the search input
@@ -146,11 +139,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Call API with the found player ID
         const url = `https://cors-anywhere.herokuapp.com/https://api-web.nhle.com/v1/player/${playerId}/game-log/20242025/2`;
     
+        document.getElementById("game-log-container").style.display = "block"
+
         fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (data.gameLog && data.gameLog.length > 0) {
                     displayGameLog(data.gameLog);
+                    console.log(url)
                 } else {
                     document.getElementById("game-log-container").innerHTML = "No Game Log Data available.";
                 }
@@ -160,12 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("game-log-container").innerHTML = "Error fetching player stats.";
             });
     }
-    
-    
-    
-    
-    
-    
 
 
 
@@ -184,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
         // Create table header
         const header = document.createElement('thead');
         const headerRow = document.createElement('tr');
-        const headers = ['Date', 'Opponent', 'Goals', 'Assists', 'Points', 'Shots', 'PIM', 'TOI'];
+        const headers = ['Date', '@', 'Opponent', 'Goals', 'Assists', 'Points', 'Shots', 'PIM', 'TOI'];
     
         headers.forEach(headerText => {
             const th = document.createElement('th');
@@ -203,6 +193,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const dateCell = document.createElement('td');
             dateCell.textContent = game.gameDate;
             row.appendChild(dateCell);
+
+            // @
+            let atCell = document.createElement('td');
+            if (game.homeRoadFlag == "R") {
+                atCell.textContent = "@";
+            } else {
+                atCell.textContent = "";
+            }
+            row.appendChild(atCell);
     
             // Opponent
             const opponentCell = document.createElement('td');
@@ -245,10 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         table.appendChild(tbody);
         tableContainer.appendChild(table);  // Append the table to the container
     }
-    
-
-
-
 
 
 
@@ -264,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show content for the NBA page
     function showNBAPage() {
         const contentArea = document.getElementById("content-area");
+        contentArea.innerHTML = ""
         contentArea.innerHTML = `
             <div class="search-container">
                 <input type="text" id="search" placeholder="Search NBA Players...">
@@ -295,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show content for the MLB page
     function showMLBPage() {
         const contentArea = document.getElementById("content-area");
+        contentArea.innerHTML = ""
         contentArea.innerHTML = `
             <div class="box-container">
                 <div class="sport-box">Home Run Leaders</div>
@@ -308,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Show content for the NFL page
     function showNFLPage() {
         const contentArea = document.getElementById("content-area");
+        contentArea.innerHTML = ""
         contentArea.innerHTML = `
             <div class="box-container">
                 <div class="sport-box">Passing Yards</div>
