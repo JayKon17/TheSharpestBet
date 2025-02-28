@@ -470,52 +470,52 @@ th {
     text-align: left;
 }
 
-#averages-container table {
+#shot-analysis-container table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
     font-family: Arial, sans-serif;
 }
 
-#averages-container th, #game-log-container td {
+#shot-analysis-container th, #game-log-container td {
     padding: 12px;
     text-align: left;
     border: 1px solid #ddd;
 }
 
 /* Header styling */
-#averages-container th {
+#shot-analysis-container th {
     background-color: #0044cc; /* Blue header */
     color: white;
     font-weight: bold;
 }
 
 /* Row styling */
-#averages-container tr:nth-child(even) {
+#shot-analysis-container tr:nth-child(even) {
     background-color: #f2f2f2; /* Light grey for even rows */
 }
 
-#averages-container tr:nth-child(odd) {
+#shot-analysis-container tr:nth-child(odd) {
     background-color: #ffffff; /* White for odd rows */
 }
 
-#averages-container tr:hover {
+#shot-analysis-container tr:hover {
     background-color: #ddd; /* Light grey on hover */
 }
 
 /* Improve the look of small cells like game date and opponent */
-#averages-container td {
+#shot-analysis-container td {
     font-size: 14px;
 }
 
 /* Responsive design: make the table scrollable on small screens */
-#averages-container {
+#shot-analysis-container {
     max-width: 100%;
     overflow-x: auto;
 }
 
 /* Add a title for the game log section */
-#averages-container h2 {
+#shot-analysis-container h2 {
     font-size: 24px;
     color: #333;
     text-align: center;
@@ -523,7 +523,7 @@ th {
 }
 
 /* Table caption */
-#averages-container caption {
+#shot-analysis-container caption {
     font-size: 18px;
     margin-bottom: 10px;
     font-weight: bold;
