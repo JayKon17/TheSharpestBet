@@ -249,98 +249,61 @@ document.addEventListener("DOMContentLoaded", () => {
         tableContainer.appendChild(table);  // Append the table to the container
     }
 
+// Helper functions (define before being called)
+function createRow(values, cellType = 'td') {
+    const row = document.createElement('tr');
+    values.forEach(value => {
+        const cell = document.createElement(cellType);
+        cell.textContent = value;
+        row.appendChild(cell);
+    });
+    return row;
+}
 
-    function displayShotAnalysis() {
-        const shotAnalysisContainer = document.getElementById("shot-analysis-container");
-    
-        shotAnalysisContainer.innerHTML = '';  // Clear previous content
-    
-        const table = document.createElement('table');
-        table.classList.add('shot-analysis-table');  // Add a class for styling
-    
-        // Create table header
-        const header = document.createElement('thead');
-        const headerRow = document.createElement('tr');
-        const headers = ['Over', '0.5', '1.5', '2.5', '3.5', '4.5', '5.5+', 'Under', '0.5', '1.5', '2.5', '3.5', '4.5', '5.5+'];
-    
-        headers.forEach(headerText => {
-            const th = document.createElement('th');
-            th.textContent = headerText;
-            headerRow.appendChild(th);
-        });
-        header.appendChild(headerRow);
-        table.appendChild(header);
-    
-        // Create table body
-        const tbody = document.createElement('tbody');
-    
-        // Extract data from game log table
-        const gameLogData = getGameLogData();
-    
-        // Now we need to calculate the counts, percentages, and breakevens based on the shots data from the game log.
-        const shotAnalysisData = calculateShotAnalysisData(gameLogData);
-    
-        // Row for Counts (Over and Under)
-        const countsRow = document.createElement('tr');
-    
-        // Add dummy data for the first and seventh columns (Under and Over)
-        const dummyData1 = document.createElement('td');
-        dummyData1.textContent = 'Counts';
-        countsRow.appendChild(dummyData1);  // Dummy data for "Over"
-    
-        // Add "Over" counts for each threshold
-        shotAnalysisData.counts.over.forEach(count => {
-            const td = document.createElement('td');
-            td.textContent = count;
-            countsRow.appendChild(td);
-        });
-    
-        // Add dummy data for the seventh column (Under)
-        const dummyData2 = document.createElement('td');
-        dummyData2.textContent = '';
-        countsRow.appendChild(dummyData2);  // Dummy data for "Under"
-    
-        // Add "Under" counts for each threshold
-        shotAnalysisData.counts.under.forEach(count => {
-            const td = document.createElement('td');
-            td.textContent = count;
-            countsRow.appendChild(td);
-        });
-    
-        tbody.appendChild(countsRow);
-    
-        // Row for % Over 🎯
-        const overPercentsRow = document.createElement('tr');
-    
-        // Add dummy data for the first and seventh columns (Under and Over)
-        const dummyData3 = document.createElement('td');
-        dummyData3.textContent = '% Games';
-        overPercentsRow.appendChild(dummyData3);  // Dummy data for "Over"
-    
-        // Add "Over" percentages for each threshold
-        shotAnalysisData.percentages.over.forEach(percent => {
-            const td = document.createElement('td');
-            td.textContent = percent;
-            overPercentsRow.appendChild(td);
-        });
-    
-        // Add dummy data for the seventh column (Under)
-        const dummyData4 = document.createElement('td');
-        dummyData4.textContent = '';
-        overPercentsRow.appendChild(dummyData4);  // Dummy data for "Under"
-    
-        // Add "Under" percentages for each threshold
-        shotAnalysisData.percentages.under.forEach(percent => {
-            const td = document.createElement('td');
-            td.textContent = percent;
-            overPercentsRow.appendChild(td);
-        });
-    
-        tbody.appendChild(overPercentsRow);   
-        table.appendChild(tbody);
-        shotAnalysisContainer.appendChild(table);  // Append the table to the container
-    }
-    
+function createDataRow(label, data) {
+    const row = document.createElement('tr');
+    row.appendChild(createCell(label));  // First cell (row label)
+
+    data.over.forEach(value => row.appendChild(createCell(value)));
+    row.appendChild(createCell(''));  // Empty separator cell
+    data.under.forEach(value => row.appendChild(createCell(value)));
+
+    return row;
+}
+
+function createCell(content) {
+    const cell = document.createElement('td');
+    cell.textContent = content;
+    return cell;
+}
+
+// Your main display function
+function displayShotAnalysis() {
+    const shotAnalysisContainer = document.getElementById("shot-analysis-container");
+    shotAnalysisContainer.innerHTML = '';  // Clear previous content
+
+    const table = document.createElement('table');
+    table.classList.add('shot-analysis-table');
+
+    const headers = ['Over', '0.5', '1.5', '2.5', '3.5', '4.5', '5.5+', 'Under', '0.5', '1.5', '2.5', '3.5', '4.5', '5.5+'];
+    table.appendChild(createRow(headers, 'th'));
+
+    const shotAnalysisData = calculateShotAnalysisData(getGameLogData());
+
+    const rows = [
+        { label: 'Counts', data: shotAnalysisData.counts },
+        { label: '% Games', data: shotAnalysisData.percentages },
+        { label: 'Breakeven Odds', data: shotAnalysisData.breakevens }
+    ];
+
+    rows.forEach(row => {
+        table.appendChild(createDataRow(row.label, row.data));
+    });
+
+    shotAnalysisContainer.appendChild(table);
+}
+
+ 
     function getGameLogData() {
         const gameLogContainer = document.getElementById("game-log-container");
         const rows = gameLogContainer.querySelectorAll("table tbody tr");
@@ -369,7 +332,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const percentages = { over: [], under: [] };
         const breakevens = { over: [], under: [] };
     
-        // Calculate values for Over and Under based on shots
         const thresholds = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5];
     
         // Initialize arrays
@@ -384,29 +346,46 @@ document.addEventListener("DOMContentLoaded", () => {
     
         gameLogData.forEach(game => {
             thresholds.forEach((threshold, index) => {
-                // Over
                 if (game.shots >= threshold) {
                     counts.over[index]++;
                 }
-                // Under
                 if (game.shots < threshold) {
                     counts.under[index]++;
                 }
             });
         });
     
-        // Calculate percentages and breakevens
         thresholds.forEach((threshold, index) => {
             const overCount = counts.over[index];
             const underCount = counts.under[index];
     
             // Percentage
-            percentages.over[index] = ((overCount / gameLogData.length) * 100).toFixed(2) + "%";
-            percentages.under[index] = ((underCount / gameLogData.length) * 100).toFixed(2) + "%";
+            const overPercent = overCount / gameLogData.length;
+            const underPercent = underCount / gameLogData.length;
+    
+            percentages.over[index] = (overPercent * 100).toFixed(2) + "%";
+            percentages.under[index] = (underPercent * 100).toFixed(2) + "%";
+    
+            // Breakeven Odds Conversion
+            breakevens.over[index] = convertToAmericanOdds(overPercent);
+            breakevens.under[index] = convertToAmericanOdds(underPercent);
         });
     
-        return { counts, percentages };
+        return { counts, percentages, breakevens };
     }
+    
+    // Function to convert probability to American Odds
+    function convertToAmericanOdds(probability) {
+        if (probability <= 0 || probability >= 1) return "N/A"; // Invalid values
+        probability = parseFloat(probability.toFixed(4));
+    
+        if (probability > 0.50) {
+            return Math.round(-((probability / (1 - probability)) * 100)); // Favorite odds
+        } else {
+            return "+" + Math.round(((1 - probability) / probability) * 100); // Underdog odds
+        }
+    }
+    
     
 
 
