@@ -471,7 +471,7 @@ th {
 }
 
 #shot-analysis-container table {
-    width: 100%;
+    width: 50%;
     border-collapse: collapse;
     margin: 20px 0;
     font-family: Arial, sans-serif;
@@ -488,6 +488,7 @@ th {
     background-color: #0044cc; /* Blue header */
     color: white;
     font-weight: bold;
+    width: 50%;
 }
 
 /* Row styling */
@@ -510,7 +511,6 @@ th {
 
 /* Responsive design: make the table scrollable on small screens */
 #shot-analysis-container {
-    max-width: 100%;
     overflow-x: auto;
 }
 

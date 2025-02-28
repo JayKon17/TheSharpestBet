@@ -285,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         // Add dummy data for the first and seventh columns (Under and Over)
         const dummyData1 = document.createElement('td');
-        dummyData1.textContent = '';
+        dummyData1.textContent = 'Counts';
         countsRow.appendChild(dummyData1);  // Dummy data for "Over"
     
         // Add "Over" counts for each threshold
@@ -314,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         // Add dummy data for the first and seventh columns (Under and Over)
         const dummyData3 = document.createElement('td');
-        dummyData3.textContent = '';
+        dummyData3.textContent = '% Games';
         overPercentsRow.appendChild(dummyData3);  // Dummy data for "Over"
     
         // Add "Over" percentages for each threshold
@@ -500,7 +500,7 @@ document.addEventListener("DOMContentLoaded", () => {
             })
             .catch(error => {
                 console.error('Error fetching live scores:', error);
-                document.getElementById('live-scores').innerHTML = 'Unable to fetch live scores at the moment.';
+                displayLiveNHLScores([]);
             });
     }
 
