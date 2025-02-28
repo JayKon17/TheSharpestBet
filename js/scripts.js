@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const API_key = "5be9118d712dcce89e543dbfa3a1de27" // 7 is last digit
+    const API_key = "5be9118d712dcce89e543dbfa3a1de2" // 7 is last digit
 
     // Data structure to manage sport-related content
     const sportsData = {
@@ -68,8 +68,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function showNHLPage() {
         const contentArea = document.getElementById("content-area");
         contentArea.innerHTML = `
-    <div class="search-bar-container">
-    <input type="text" id="search-bar" placeholder="Search for players..." onkeyup="showSuggestions(this.value)">
+    <div class="search-container">
+    <input type="text" id="search-bar" autocomplete="off" placeholder="Search for players..." onkeyup="showSuggestions(this.value)">
     <div id="suggestions-container" class="suggestions-container"></div>
 `;
         document.getElementById("live-scores-container").style.display = "block";
@@ -104,22 +104,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 suggestionItem.classList.add("suggestion-item");
                 suggestionItem.textContent = player.name;
                 suggestionItem.onclick = function() {
-                    selectPlayer(player.name);
+                    selectPlayer(player.name);  // Use the single definition of selectPlayer
                 };
                 suggestionsContainer.appendChild(suggestionItem);
             });
         }
     };
 
-    window.selectPlayer = function(playerName) {
-        document.getElementById("search-bar").value = playerName;
-        document.getElementById("suggestions-container").innerHTML = ''; // Clear suggestions
-        console.log(`Player selected: ${playerName}`); // Replace with actual functionality
-    };
-
+    // Single definition of selectPlayer function
     function selectPlayer(playerName) {
         document.getElementById("search-bar").value = playerName;
         document.getElementById("suggestions-container").innerHTML = ''; // Clear suggestions
+        console.log(`Player selected: ${playerName}`);
 
         // Normalize the player name (case insensitive)
         const normalizedPlayerName = playerName.trim().toLowerCase();
@@ -132,6 +128,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 break; // Exit the loop once the correct player is found
             }
         }
+
+        // If player ID was found, proceed; otherwise, display an error
+        if (!playerId) {
+            console.error(`Player ID not found for: ${playerName}`);
+            document.getElementById("game-log-container").innerHTML = `Player ID not found for: ${playerName}`;
+            return; // Stop the function if ID is not found
+        }
+
+        console.log(`Player ID for ${playerName}: ${playerId}`);
+
 
         // If player ID was found, proceed; otherwise, display an error
         if (!playerId) {
